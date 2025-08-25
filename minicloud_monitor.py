@@ -32,6 +32,13 @@ class MiniCloudMonitor(rumps.App):
         self.prometheus_url = server_config['prometheus_url']
         self.grafana_url = server_config['grafana_url']
         self.nextcloud_url = server_config['nextcloud_url']
+        self.portainer_url = server_config.get('portainer_url', 'http://192.168.1.93:9000')
+        self.node_exporter_url = server_config.get('node_exporter_url', 'http://192.168.1.93:9100')
+        self.docker_registry_url = server_config.get('docker_registry_url', 'http://192.168.1.93:5000')
+        self.traefik_dashboard_url = server_config.get('traefik_dashboard_url', 'http://192.168.1.93:8081')
+        self.prometheus_alertmanager_url = server_config.get('prometheus_alertmanager_url', 'http://192.168.1.93:9093')
+        self.redis_commander_url = server_config.get('redis_commander_url', 'http://192.168.1.93:8082')
+        self.postgres_admin_url = server_config.get('postgres_admin_url', 'http://192.168.1.93:5050')
         
         # Monitoring settings - ensure minimum 60 second refresh
         monitor_config = self.config['monitoring']
@@ -42,6 +49,11 @@ class MiniCloudMonitor(rumps.App):
         # Display settings
         display_config = self.config['display']
         self.icons = display_config['status_icons']
+        
+        # Single icon state management
+        self.use_single_icon = display_config.get('use_single_icon', True)
+        self.normal_icon = "☁️"
+        self.darkened_icon = "🌫️"  # Use fog/mist as darkened cloud
         
         # Metrics storage
         self.metrics = {
@@ -81,7 +93,14 @@ class MiniCloudMonitor(rumps.App):
             "server": {
                 "prometheus_url": "http://localhost:9090",
                 "grafana_url": "http://localhost:3000",
-                "nextcloud_url": "http://localhost:8080"
+                "nextcloud_url": "http://localhost:8080",
+                "portainer_url": "http://localhost:9000",
+                "node_exporter_url": "http://localhost:9100",
+                "docker_registry_url": "http://localhost:5000",
+                "traefik_dashboard_url": "http://localhost:8081",
+                "prometheus_alertmanager_url": "http://localhost:9093",
+                "redis_commander_url": "http://localhost:8082",
+                "postgres_admin_url": "http://localhost:5050"
             },
             "monitoring": {
                 "refresh_interval": 60,
@@ -188,17 +207,31 @@ class MiniCloudMonitor(rumps.App):
             except:
                 pass
             
-            # Update title based on CPU load
-            if self.metrics['cpu'] > self.cpu_critical:
-                self.title = self.icons['critical']
-            elif self.metrics['cpu'] > self.cpu_warning:
-                self.title = self.icons['warning']
+            # Update title based on status - single icon mode
+            if self.use_single_icon:
+                # Use darkened cloud for any issues, normal cloud for good status
+                if (self.metrics['status'] == 'Offline' or 
+                    self.metrics['cpu'] > self.cpu_warning or
+                    self.metrics['memory'] > self.config['monitoring'].get('memory_warning_threshold', 70) or
+                    self.metrics['disk'] > self.config['monitoring'].get('disk_warning_threshold', 85)):
+                    self.title = self.darkened_icon
+                else:
+                    self.title = self.normal_icon
             else:
-                self.title = self.icons['normal']
+                # Legacy multi-icon mode
+                if self.metrics['cpu'] > self.cpu_critical:
+                    self.title = self.icons['critical']
+                elif self.metrics['cpu'] > self.cpu_warning:
+                    self.title = self.icons['warning']
+                else:
+                    self.title = self.icons['normal']
                 
         except Exception as e:
             self.metrics['status'] = 'Offline'
-            self.title = self.icons['offline']
+            if self.use_single_icon:
+                self.title = self.darkened_icon
+            else:
+                self.title = self.icons['offline']
     
     def monitor_loop(self):
         """Background monitoring loop"""
@@ -243,10 +276,20 @@ class MiniCloudMonitor(rumps.App):
             self.menu.add(rumps.MenuItem(f"🔒 Fail2ban: {self.metrics['fail2ban_jails']} jails active", callback=None))
         self.menu.add(rumps.separator)
         
-        # Quick Actions
+        # Quick Actions - Core Services
         self.menu.add(rumps.MenuItem("📊 Open Grafana Dashboard", self.open_grafana))
         self.menu.add(rumps.MenuItem("☁️ Open Nextcloud", self.open_nextcloud))
         self.menu.add(rumps.MenuItem("🔍 Open Prometheus", self.open_prometheus))
+        self.menu.add(rumps.separator)
+        
+        # Additional Services
+        self.menu.add(rumps.MenuItem("🐳 Open Portainer", self.open_portainer))
+        self.menu.add(rumps.MenuItem("📈 Open Node Exporter", self.open_node_exporter))
+        self.menu.add(rumps.MenuItem("📦 Open Docker Registry", self.open_docker_registry))
+        self.menu.add(rumps.MenuItem("🚦 Open Traefik Dashboard", self.open_traefik))
+        self.menu.add(rumps.MenuItem("🚨 Open AlertManager", self.open_alertmanager))
+        self.menu.add(rumps.MenuItem("📋 Open Redis Commander", self.open_redis_commander))
+        self.menu.add(rumps.MenuItem("🐘 Open pgAdmin", self.open_postgres_admin))
         self.menu.add(rumps.separator)
         
         # Controls
@@ -268,6 +311,41 @@ class MiniCloudMonitor(rumps.App):
     def open_prometheus(self, _):
         import webbrowser
         webbrowser.open(self.prometheus_url)
+    
+    @rumps.clicked("🐳 Open Portainer")
+    def open_portainer(self, _):
+        import webbrowser
+        webbrowser.open(self.portainer_url)
+    
+    @rumps.clicked("📈 Open Node Exporter")
+    def open_node_exporter(self, _):
+        import webbrowser
+        webbrowser.open(self.node_exporter_url)
+    
+    @rumps.clicked("📦 Open Docker Registry")
+    def open_docker_registry(self, _):
+        import webbrowser
+        webbrowser.open(self.docker_registry_url)
+    
+    @rumps.clicked("🚦 Open Traefik Dashboard")
+    def open_traefik(self, _):
+        import webbrowser
+        webbrowser.open(self.traefik_dashboard_url)
+    
+    @rumps.clicked("🚨 Open AlertManager")
+    def open_alertmanager(self, _):
+        import webbrowser
+        webbrowser.open(self.prometheus_alertmanager_url)
+    
+    @rumps.clicked("📋 Open Redis Commander")
+    def open_redis_commander(self, _):
+        import webbrowser
+        webbrowser.open(self.redis_commander_url)
+    
+    @rumps.clicked("🐘 Open pgAdmin")
+    def open_postgres_admin(self, _):
+        import webbrowser
+        webbrowser.open(self.postgres_admin_url)
     
     @rumps.clicked("🔄 Refresh Now")
     def refresh(self, _):
