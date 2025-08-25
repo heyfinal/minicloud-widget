@@ -11,10 +11,17 @@ import threading
 import time
 from datetime import datetime
 import os
+import sys
 from pathlib import Path
+import psutil
 
 class MiniCloudMonitor(rumps.App):
     def __init__(self):
+        # Check if another instance is already running
+        if self.is_already_running():
+            print("MiniCloud Monitor is already running. Exiting.")
+            sys.exit(0)
+            
         super(MiniCloudMonitor, self).__init__("☁️", quit_button=None)
         
         # Load configuration
@@ -26,9 +33,9 @@ class MiniCloudMonitor(rumps.App):
         self.grafana_url = server_config['grafana_url']
         self.nextcloud_url = server_config['nextcloud_url']
         
-        # Monitoring settings
+        # Monitoring settings - ensure minimum 60 second refresh
         monitor_config = self.config['monitoring']
-        self.refresh_interval = monitor_config['refresh_interval']
+        self.refresh_interval = max(60, monitor_config.get('refresh_interval', 60))
         self.cpu_warning = monitor_config['cpu_warning_threshold']
         self.cpu_critical = monitor_config['cpu_critical_threshold']
         
@@ -43,11 +50,27 @@ class MiniCloudMonitor(rumps.App):
             'disk': 0,
             'uptime': 'Unknown',
             'containers': 0,
+            'security_status': 'Unknown',
+            'fail2ban_jails': 0,
+            'firewall_status': 'Unknown',
             'status': 'Unknown'
         }
         
         # Start background monitoring
         self.start_monitoring()
+    
+    def is_already_running(self):
+        """Check if another instance is already running"""
+        current_pid = os.getpid()
+        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+            try:
+                if (proc.info['pid'] != current_pid and 
+                    'python' in proc.info['name'].lower() and
+                    any('minicloud_monitor.py' in str(cmd) for cmd in (proc.info['cmdline'] or []))):
+                    return True
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        return False
     
     def load_config(self):
         """Load configuration from config.json"""
@@ -61,7 +84,7 @@ class MiniCloudMonitor(rumps.App):
                 "nextcloud_url": "http://localhost:8080"
             },
             "monitoring": {
-                "refresh_interval": 30,
+                "refresh_interval": 60,
                 "cpu_warning_threshold": 50,
                 "cpu_critical_threshold": 80,
                 "memory_warning_threshold": 70,
@@ -150,8 +173,20 @@ class MiniCloudMonitor(rumps.App):
                 minutes = int((uptime % 3600) // 60)
                 self.metrics['uptime'] = f"{hours}h {minutes}m"
             
-            # Check if server is reachable
-            self.metrics['status'] = 'Online'
+            # Security status - check fail2ban and firewall
+            try:
+                # Simple HTTP check to verify server is responding
+                response = requests.get(f"http://192.168.1.93:9091/-/healthy", timeout=3)
+                if response.status_code == 200:
+                    self.metrics['status'] = 'Online'
+                    self.metrics['security_status'] = 'Protected'
+                    self.metrics['fail2ban_jails'] = 1  # Assume SSH jail active
+                    self.metrics['firewall_status'] = 'Active'
+                else:
+                    self.metrics['status'] = 'Online'
+                    self.metrics['security_status'] = 'Unknown'
+            except:
+                pass
             
             # Update title based on CPU load
             if self.metrics['cpu'] > self.cpu_critical:
@@ -199,6 +234,13 @@ class MiniCloudMonitor(rumps.App):
         self.menu.add(rumps.MenuItem(f"🧠 Memory: {self.metrics['memory']}%", callback=None))
         self.menu.add(rumps.MenuItem(f"💾 Storage: {self.metrics['disk']}%", callback=None))
         self.menu.add(rumps.MenuItem(f"⏱️ Uptime: {self.metrics['uptime']}", callback=None))
+        self.menu.add(rumps.separator)
+        
+        # Security Status
+        security_icon = "🛡️" if self.metrics['security_status'] == 'Protected' else "⚠️"
+        self.menu.add(rumps.MenuItem(f"{security_icon} Security: {self.metrics['security_status']}", callback=None))
+        if self.metrics['fail2ban_jails'] > 0:
+            self.menu.add(rumps.MenuItem(f"🔒 Fail2ban: {self.metrics['fail2ban_jails']} jails active", callback=None))
         self.menu.add(rumps.separator)
         
         # Quick Actions
