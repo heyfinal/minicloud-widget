@@ -1,0 +1,28 @@
+{
+  "server": {
+    "prometheus_url": "http://192.168.1.93:9091",
+    "grafana_url": "http://192.168.1.93:3000",
+    "nextcloud_url": "http://192.168.1.93:8080"
+  },
+  "monitoring": {
+    "refresh_interval": 30,
+    "cpu_warning_threshold": 50,
+    "cpu_critical_threshold": 80,
+    "memory_warning_threshold": 70,
+    "disk_warning_threshold": 85
+  },
+  "display": {
+    "show_notifications": true,
+    "compact_mode": false,
+    "status_icons": {
+      "normal": "☁️✅",
+      "warning": "☁️⚡",
+      "critical": "☁️⚠️",
+      "offline": "☁️❌"
+    }
+  },
+  "app": {
+    "debug": false,
+    "log_level": "INFO"
+  }
+}
