@@ -1,25 +1,168 @@
-# MiniCloud Monitor
+# MiniCLOUD Monitor Widget
 
-A native macOS menu bar widget for monitoring your server infrastructure with Prometheus metrics. Get real-time system statistics, quick access to dashboards, and visual status indicators right from your menu bar.
+A professional macOS menu bar widget for monitoring your MiniCLOUD server with real-time system metrics, security status, and one-click access to your services. Now includes complete touchless deployment automation for Mac Mini hardware.
 
 ![MiniCloud Monitor](https://img.shields.io/badge/platform-macOS-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.7+-green.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-## Features
+## ✨ Features
 
-- 📊 **Real-time Monitoring**: CPU, Memory, Disk usage from Prometheus
-- 🖥️ **Native macOS Integration**: Clean menu bar interface using system notifications
-- ⚡ **Quick Actions**: Direct links to Grafana, Nextcloud, Prometheus
-- 🔄 **Auto-refresh**: Updates every 30 seconds with configurable intervals  
-- 🎨 **Visual Status**: Cloud emoji indicators (✅ Normal, ⚡ Moderate, ⚠️ High load)
-- ⚙️ **Configurable**: Easy setup for custom servers and ports
-- 🚀 **Lightweight**: Minimal resource usage, auto-starts on boot
+### System Monitoring
+- 📊 **Real-time Metrics**: CPU, Memory, Disk usage, and uptime from Prometheus
+- 🖥️ **Native macOS Integration**: Clean menu bar interface with system notifications
+- ⚡ **Smart Refresh**: Auto-updates every 60 seconds minimum with duplicate prevention
+- 🎨 **Visual Status Indicators**: Color-coded cloud icons based on system health
 
-## Screenshots
+### Security Monitoring (NEW)
+- 🛡️ **Security Status**: Real-time security health monitoring
+- 🔒 **Fail2ban Integration**: Monitor active SSH protection jails
+- 🔥 **Firewall Status**: Track UFW firewall status and rules
+- ⚠️ **Security Alerts**: Visual indicators for security system status
+
+### Quick Access
+- 📊 **One-Click Dashboards**: Direct links to Grafana, Prometheus, and Nextcloud
+- ☁️ **Service Health**: Real-time availability checking with timeout handling
+- ⚙️ **Configurable URLs**: Easy customization for your server setup
+- 🔄 **Manual Refresh**: Force immediate metric updates
+
+### Deployment & Automation (NEW)
+- 🚀 **Touchless Installation**: Complete automated Ubuntu Server deployment
+- 💻 **Mac Mini Optimized**: Hardware-specific configurations for Mac Mini 7.1
+- 🏗️ **Production Ready**: Full monitoring stack, security hardening included
+- 📦 **One-Click Deploy**: Custom ISO creation with all services pre-configured
+
+## 🚀 Quick Start
+
+### Install Widget
+
+```bash
+# Clone repository
+git clone https://github.com/heyfinal/minicloud-widget.git
+cd minicloud-widget
+
+# Install dependencies
+pip3 install -r requirements.txt
+
+# Run installer
+./install_widget.sh
+```
+
+Look for the ☁️ icon in your menu bar!
+
+### Configure for Your Server
+
+Edit `config.json` (created on first run):
+
+```json
+{
+  "server": {
+    "prometheus_url": "http://YOUR-SERVER-IP:9091",
+    "grafana_url": "http://YOUR-SERVER-IP:3000",
+    "nextcloud_url": "http://YOUR-SERVER-IP:8080"
+  },
+  "monitoring": {
+    "refresh_interval": 60,
+    "cpu_warning_threshold": 50,
+    "cpu_critical_threshold": 80,
+    "memory_warning_threshold": 70,
+    "disk_warning_threshold": 85
+  },
+  "display": {
+    "show_notifications": true,
+    "compact_mode": false,
+    "status_icons": {
+      "normal": "☁️",
+      "warning": "⚠️", 
+      "critical": "🚨",
+      "offline": "💀"
+    }
+  }
+}
+```
+
+## 🏗️ Touchless MiniCLOUD Deployment
+
+### Create Auto-Install ISO
+
+Create a bootable Ubuntu Server ISO with complete MiniCLOUD setup:
+
+```bash
+# Install required tools (macOS)
+brew install xorriso p7zip wget
+
+# Create custom deployment ISO
+./create_minicloud_iso.sh
+```
+
+### What Gets Installed Automatically
+
+The deployment ISO creates a complete server environment:
+
+- **🐧 Ubuntu Server 24.04 LTS** with Mac Mini 7.1 optimizations
+- **🐳 Docker & Docker Compose** for containerized services  
+- **📊 Prometheus & Node Exporter** for comprehensive system monitoring
+- **📈 Grafana** with pre-configured dashboards and admin access
+- **☁️ Nextcloud** for cloud storage and file sharing via Snap
+- **🔒 Fail2ban** for SSH brute force protection and IP banning
+- **🔥 UFW Firewall** with secure default rules and service access
+- **📡 Broadcom WiFi drivers** for Mac Mini internal WiFi connectivity
+- **🔗 Network Bonding** Ethernet + WiFi failover configuration
+
+### Hardware Compatibility
+
+Specifically optimized for **Mac Mini 7.1 (Late 2014)**:
+- Intel Core i5/i7 4th generation processors
+- 8-16GB RAM support with automatic detection
+- Gigabit Ethernet + 802.11ac WiFi with bonding
+- USB 3.0 and Thunderbolt 2 port support
+- Automatic Broadcom WiFi driver installation
+- LVM storage with encryption options
+
+### Installation Process
+
+1. **Flash ISO to USB Drive**:
+   ```bash
+   sudo dd if=minicloud-server-autoinstall.iso of=/dev/diskX bs=1m
+   ```
+
+2. **Boot Mac Mini**:
+   - Hold Alt/Option key during startup
+   - Select "EFI Boot" option from boot menu
+   - Installation proceeds completely automatically (15-20 minutes)
+   - No user interaction required during installation
+
+3. **Access Your MiniCLOUD Server**:
+   - **SSH**: `ssh daniel@[server-ip]` (key-based auth)
+   - **Grafana**: `http://[server-ip]:3000` (admin/minicloud123)
+   - **Prometheus**: `http://[server-ip]:9091` (metrics and targets)
+   - **Nextcloud**: `http://[server-ip]:8080` (cloud storage)
+
+## 📊 Complete Monitoring Stack
+
+### Pre-configured Services
+
+| Service | Port | Purpose | Default Access |
+|---------|------|---------|----------------|
+| **Prometheus** | 9091 | Metrics collection & storage | http://server:9091 |
+| **Grafana** | 3000 | Visualization dashboards | admin/minicloud123 |
+| **Node Exporter** | 9100 | System metrics export | Internal only |
+| **Nextcloud** | 8080 | Cloud storage & sync | Via Snap package |
+| **SSH** | 22 | Secure remote access | Key-based auth |
+
+### Security Features
+
+- **🔒 Fail2ban Protection**: Automatic IP banning for failed SSH attempts
+- **🔥 UFW Firewall**: Restrictive rules allowing only necessary service ports  
+- **🛡️ Encrypted Storage**: LVM with optional LUKS full-disk encryption
+- **🔑 SSH Key Authentication**: Secure passwordless login with public key
+- **🚫 Disabled Root**: Root login disabled, sudo-only administration
+- **⏰ Automatic Updates**: Weekly security updates via cron scheduling
+
+### Widget Screenshots
 
 ```
-☁️✅ MiniCloud Monitor
+☁️ MiniCLOUD Monitor
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🟢 Status: Online
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -28,188 +171,75 @@ A native macOS menu bar widget for monitoring your server infrastructure with Pr
 💾 Storage: 12.8%
 ⏱️ Uptime: 9h 48m
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🛡️ Security: Protected
+🔒 Fail2ban: 1 jails active
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 Open Grafana Dashboard
-☁️ Open Nextcloud  
-🔍 Open Prometheus
+☁️ Open Nextcloud
+🔍 Open Prometheus  
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔄 Refresh Now
 ```
 
-## Quick Start
+## 🔧 Advanced Configuration
 
-### Prerequisites
+### Network Configuration
 
-- macOS 10.14+ 
-- Python 3.7+
-- A server running Prometheus/Grafana (see [Server Setup](#server-setup))
+The auto-install supports flexible network setup:
 
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/heyfinal/minicloud-widget.git
-   cd minicloud-widget
-   ```
-
-2. **Run the installer:**
-   ```bash
-   ./install_widget.sh
-   ```
-
-3. **Look for the ☁️ icon in your menu bar!**
-
-The widget will automatically start and connect to your server. If you need to configure custom settings, edit `config.json` (created on first run).
-
-### Manual Installation
-
-```bash
-# Install dependencies
-pip3 install --user rumps requests
-
-# Make executable
-chmod +x minicloud_monitor.py
-
-# Run manually
-python3 minicloud_monitor.py
+```yaml
+# Ethernet + WiFi bonding with failover
+bonds:
+  bond0:
+    interfaces: [eno0, wlp3s0]  # Ethernet primary, WiFi secondary
+    addresses: [192.168.1.100/24]
+    gateway4: 192.168.1.1
+    parameters:
+      mode: active-backup
+      primary: eno0  # Prefer Ethernet
+      fail-over-mac: none
 ```
 
-## Configuration
+### Custom Service Configuration
 
-Edit `config.json` to customize your setup:
+Modify the ISO script to add your own services:
+
+```bash
+# Add custom services to /opt/minicloud-startup.sh
+- echo "Starting custom service..." >> /var/log/minicloud.log
+- systemctl enable my-custom-service
+- systemctl start my-custom-service
+```
+
+### Widget Customization
+
+Advanced widget configuration options:
 
 ```json
 {
-  "server": {
-    "prometheus_url": "http://192.168.1.93:9091",
-    "grafana_url": "http://192.168.1.93:3000", 
-    "nextcloud_url": "http://192.168.1.93:8080"
-  },
   "monitoring": {
-    "refresh_interval": 30,
-    "cpu_warning_threshold": 50,
-    "cpu_critical_threshold": 80,
-    "memory_warning_threshold": 70,
-    "disk_warning_threshold": 85
+    "refresh_interval": 60,
+    "timeout_seconds": 10,
+    "retry_attempts": 3,
+    "enable_security_monitoring": true
   },
   "display": {
-    "show_notifications": true,
-    "compact_mode": false
+    "show_security_status": true,
+    "compact_mode": false,
+    "notification_threshold": 90
   }
 }
 ```
 
-## Server Setup
+## 🛠️ Development & Testing
 
-### Option 1: Complete MiniCloud Stack
+### Requirements
 
-Deploy a full monitoring stack with our Docker Compose:
-
-```yaml
-version: '3.8'
-services:
-  prometheus:
-    image: prom/prometheus:latest
-    ports: ['9091:9090']
-    volumes: ['./prometheus:/etc/prometheus']
-    
-  grafana:
-    image: grafana/grafana:latest
-    ports: ['3000:3000']
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      
-  node-exporter:
-    image: prom/node-exporter:latest
-    ports: ['9100:9100']
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
+```txt
+rumps>=0.4.0
+requests>=2.25.0
+psutil>=5.8.0
 ```
-
-### Option 2: Existing Prometheus
-
-If you already have Prometheus running, ensure these endpoints are available:
-
-- **Prometheus API**: `http://your-server:9090/api/v1/query`
-- **Basic metrics**: `node_cpu_seconds_total`, `node_memory_*`, `node_filesystem_*`
-
-### Option 3: Cloud Providers
-
-The widget works with cloud-hosted Prometheus instances:
-
-- **Grafana Cloud**: Use your Grafana Cloud Prometheus endpoint
-- **AWS**: Amazon Managed Service for Prometheus
-- **GCP**: Google Cloud Monitoring with Prometheus
-- **Azure**: Azure Monitor with Prometheus metrics
-
-## Usage
-
-### Menu Bar Controls
-
-- **Click the ☁️ icon** to view current metrics
-- **📊 Open Grafana Dashboard** - Launch web dashboard
-- **☁️ Open Nextcloud** - Access your cloud storage
-- **🔍 Open Prometheus** - View raw metrics
-- **🔄 Refresh Now** - Force immediate update
-
-### Status Indicators
-
-- **☁️✅** - Normal operation (CPU < 50%)  
-- **☁️⚡** - Moderate load (CPU 50-80%)
-- **☁️⚠️** - High load (CPU > 80%)
-- **☁️❌** - Server offline/unreachable
-
-### Auto-start Setup
-
-The installer automatically creates a Launch Agent for system startup:
-
-```bash
-# Manual control
-launchctl load ~/Library/LaunchAgents/com.minicloud.monitor.plist
-launchctl unload ~/Library/LaunchAgents/com.minicloud.monitor.plist
-```
-
-## Troubleshooting
-
-### Common Issues
-
-**Widget not appearing in menu bar:**
-```bash
-python3 minicloud_monitor.py
-# Check console for errors
-```
-
-**Connection failed:**
-```bash
-# Test Prometheus connection
-curl http://your-server:9091/api/v1/query?query=up
-```
-
-**Python/pip issues:**
-```bash
-# Install with Homebrew Python
-brew install python
-/opt/homebrew/bin/python3 -m pip install rumps requests
-```
-
-### Debug Mode
-
-Run with debug logging:
-```bash
-python3 minicloud_monitor.py --debug
-```
-
-### Logs
-
-Check application logs:
-```bash
-# Launch Agent logs
-tail -f /tmp/minicloud-monitor.out
-tail -f /tmp/minicloud-monitor.err
-```
-
-## Development
 
 ### Building from Source
 
@@ -218,58 +248,122 @@ git clone https://github.com/heyfinal/minicloud-widget.git
 cd minicloud-widget
 
 # Development dependencies
-pip3 install --user rumps requests pytest
-
-# Run tests
-python3 -m pytest tests/
+pip3 install --user -r requirements.txt
 
 # Run development version
-python3 minicloud_monitor.py --dev
+python3 minicloud_monitor.py
 ```
 
-### Contributing
+### Testing the ISO
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Submit a pull request
+```bash
+# Test ISO creation process
+./create_minicloud_iso.sh
 
-### Architecture
-
-```
-minicloud_monitor.py     # Main application
-├── PrometheusClient     # API client for metrics
-├── MiniCloudMonitor     # Core app logic & menu bar
-└── Configuration        # Settings management
+# Verify ISO with QEMU (requires: brew install qemu)
+qemu-system-x86_64 \
+  -m 4096 \
+  -cdrom minicloud-server-autoinstall.iso \
+  -drive file=test-disk.img,format=qcow2,if=virtio
 ```
 
-## Roadmap
+## 📋 Troubleshooting
 
-- [ ] **Multi-server support** - Monitor multiple servers
-- [ ] **Custom metrics** - Add your own Prometheus queries  
-- [ ] **Alerting** - Desktop notifications for critical issues
-- [ ] **Themes** - Dark mode, custom icons
-- [ ] **Docker widget** - Container-specific monitoring
-- [ ] **iOS companion** - View metrics on iPhone/iPad
+### Common Widget Issues
 
-## License
+**Multiple widgets in menu bar**:
+```bash
+# Kill all instances
+pkill -f minicloud_monitor.py
+# Widget now prevents duplicates automatically
+python3 minicloud_monitor.py
+```
 
-MIT License - see [LICENSE](LICENSE) file for details.
+**Connection timeouts**:
+```bash
+# Test server connectivity
+ping YOUR-SERVER-IP
+curl -m 10 http://YOUR-SERVER-IP:9091/-/healthy
+```
 
-## Support
+**Widget not auto-starting**:
+```bash
+# Check launch agent status
+launchctl list | grep minicloud
+launchctl load ~/Library/LaunchAgents/com.minicloud.monitor.plist
+```
 
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/heyfinal/minicloud-widget/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/heyfinal/minicloud-widget/discussions)
-- 📧 **Contact**: [support@minicloud-widget.com](mailto:support@minicloud-widget.com)
+### Server Deployment Issues
 
-## Acknowledgments
+**ISO won't boot on Mac Mini**:
+- Disable Secure Boot in Mac firmware settings
+- Try different USB creation tool (Balena Etcher recommended)
+- Verify Mac Mini 7.1 compatibility
 
-- [rumps](https://github.com/jaredks/rumps) - Ridiculously Uncomplicated macOS Python Statusbar apps
-- [Prometheus](https://prometheus.io/) - Systems monitoring and alerting toolkit
-- [Grafana](https://grafana.com/) - Observability platform
+**WiFi drivers not working**:
+```bash
+# Manual driver installation on server
+sudo apt install firmware-linux-nonfree broadcom-sta-dkms
+sudo modprobe -r b43 ssb wl brcmfmac brcmsmac bcma
+sudo modprobe wl
+```
+
+**Services not starting**:
+```bash
+# Check service status
+systemctl status prometheus grafana-server fail2ban
+# View startup logs
+journalctl -u prometheus --since "1 hour ago"
+```
+
+### Log Locations
+
+- **Widget logs**: Console.app → search "minicloud"
+- **Server installation**: `/var/log/minicloud-ready.log`
+- **Service logs**: `journalctl -u SERVICE_NAME`
+- **Security logs**: `/var/log/fail2ban.log`
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. **Fork the repository**
+2. **Create feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes** with tests
+4. **Commit changes**: `git commit -m 'Add amazing feature'`
+5. **Push to branch**: `git push origin feature/amazing-feature`
+6. **Open Pull Request** with detailed description
+
+### Development Guidelines
+
+- Follow PEP 8 Python style guidelines
+- Add tests for new functionality
+- Update documentation for user-facing changes
+- Test on actual Mac Mini hardware when possible
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **[rumps](https://github.com/jaredks/rumps)** - Ridiculously Uncomplicated macOS Python Statusbar apps
+- **[Prometheus](https://prometheus.io/)** - Systems monitoring and alerting toolkit  
+- **[Grafana](https://grafana.com/)** - The open observability platform
+- **[Nextcloud](https://nextcloud.com/)** - The self-hosted productivity platform
+- **[Ubuntu](https://ubuntu.com/)** - The leading operating system for containers and cloud
+- **[Fail2ban](https://github.com/fail2ban/fail2ban)** - Daemon to ban hosts that cause multiple authentication errors
+
+## 🌟 Support This Project
+
+If you find MiniCLOUD Monitor Widget helpful:
+
+- ⭐ **Star this repository**
+- 🐛 **Report bugs** via GitHub Issues  
+- 💡 **Suggest features** in Discussions
+- 🤝 **Contribute code** via Pull Requests
+- 📢 **Share with others** who need server monitoring
 
 ---
 
-<div align="center">
-  <strong>⭐ Star this repo if you find it helpful!</strong>
-</div>
+**Built for professional Mac Mini server deployments with enterprise-grade monitoring, security, and automation.**
