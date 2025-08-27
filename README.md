@@ -8,17 +8,37 @@ A professional macOS menu bar widget for monitoring your MiniCLOUD server with r
 
 ## ✨ Features
 
+### Enhanced Connectivity Detection (v2.0)
+- 🌐 **Multi-Path Testing**: Dual ethernet + wireless connectivity validation
+- ⚡ **Intelligent Caching**: 30-second cache for instant widget updates  
+- 🎯 **Smart Status Logic**: Distinguishes online/degraded/offline with high accuracy
+- 📊 **Service Discovery**: Tests SSH, HTTP, HTTPS, and Nextcloud accessibility
+- 🔄 **Auto-Recovery**: Handles network fluctuations and temporary outages gracefully
+
 ### System Monitoring
 - 📊 **Real-time Metrics**: CPU, Memory, Disk usage, and uptime from Prometheus
 - 🖥️ **Native macOS Integration**: Clean menu bar interface with system notifications
 - ⚡ **Smart Refresh**: Auto-updates every 60 seconds minimum with duplicate prevention
 - 🎨 **Visual Status Indicators**: Color-coded cloud icons based on system health
+- 📈 **Uptime Tracking**: Real-time uptime percentage calculation and history
 
-### Security Monitoring (NEW)
+### Advanced Widget Modes
+- 🟢 **Simple Mode**: Clean emoji-based status (`🟢 Online`, `🔴 Offline`)
+- 📋 **Detailed Mode**: Comprehensive status with IP, services, and uptime metrics  
+- 📄 **JSON Mode**: Structured data export for advanced widget integrations
+- 👁️ **Monitor Mode**: Continuous monitoring with configurable update intervals
+
+### Security Monitoring
 - 🛡️ **Security Status**: Real-time security health monitoring
 - 🔒 **Fail2ban Integration**: Monitor active SSH protection jails
 - 🔥 **Firewall Status**: Track UFW firewall status and rules
 - ⚠️ **Security Alerts**: Visual indicators for security system status
+
+### Network Troubleshooting (NEW)
+- 🔧 **Connectivity Diagnosis**: Multi-method network testing (ping, TCP, HTTP)
+- 🌐 **Interface Analysis**: Ethernet and wireless network path validation
+- 📊 **Performance Metrics**: Response time tracking and network quality assessment
+- 🚨 **Error Resilience**: Graceful handling of network failures and timeouts
 
 ### Quick Access
 - 📊 **One-Click Dashboards**: Direct links to Grafana, Prometheus, and Nextcloud
@@ -26,7 +46,7 @@ A professional macOS menu bar widget for monitoring your MiniCLOUD server with r
 - ⚙️ **Configurable URLs**: Easy customization for your server setup
 - 🔄 **Manual Refresh**: Force immediate metric updates
 
-### Deployment & Automation (NEW)
+### Deployment & Automation
 - 🚀 **Touchless Installation**: Complete automated Ubuntu Server deployment
 - 💻 **Mac Mini Optimized**: Hardware-specific configurations for Mac Mini 7.1
 - 🏗️ **Production Ready**: Full monitoring stack, security hardening included
@@ -34,13 +54,31 @@ A professional macOS menu bar widget for monitoring your MiniCLOUD server with r
 
 ## 🚀 Quick Start
 
-### Install Widget
+### Enhanced Widget (v2.0)
 
 ```bash
 # Clone repository
 git clone https://github.com/heyfinal/minicloud-widget.git
 cd minicloud-widget
 
+# Install dependencies
+pip3 install aiohttp requests
+
+# Test enhanced widget
+python3 minicloud_widget_enhanced.py --simple
+python3 minicloud_widget_enhanced.py --detailed  
+python3 minicloud_widget_enhanced.py --json
+
+# Run integration tests
+python3 widget_integration_test.py
+
+# Monitor mode (updates every 60 seconds)
+python3 minicloud_widget_enhanced.py --monitor 60 --detailed
+```
+
+### Legacy Widget
+
+```bash
 # Install dependencies
 pip3 install -r requirements.txt
 
